@@ -45,7 +45,6 @@ jobs:
             + int a = 3;
             + int b = 8;
             ```
-
             After reviewing, please leave your comments and suggestions for improvement.
 
             - Is the variable naming consistent?
