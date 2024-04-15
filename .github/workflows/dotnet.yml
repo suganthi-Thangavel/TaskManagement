@@ -17,7 +17,7 @@ jobs:
 
       - name: Log GITHUB TOKEN KEY
         run: |
-          echo "OPENAI_API_KEY: ${{ secrets.GITHUB_TOKEN  }}"
+          echo "GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}"
       - name: Log OPENAI API KEY
         run: |
           echo "OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}"
