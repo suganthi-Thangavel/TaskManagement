@@ -1,44 +1,64 @@
-name: Build
+name: Code Review
+
+permissions:
+  contents: read
+  pull-requests: write
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+
 
 on:
   push:
     branches:
       - main
+
 jobs:
-  build:
-    name: Build
-    runs-on: windows-latest
-    permissions: read-all
+  test:
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-      - name: Set up JDK 17
-        uses: actions/setup-java@v1
-        with:
-          java-version: 17
-      - name: Cache SonarQube packages
-        uses: actions/cache@v1
-        with:
-          path: ~\.sonar\cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
-      - name: Cache SonarQube scanner
-        id: cache-sonar-scanner
-        uses: actions/cache@v1
-        with:
-          path: .\.sonar\scanner
-          key: ${{ runner.os }}-sonar-scanner
-          restore-keys: ${{ runner.os }}-sonar-scanner
-      - name: Install SonarQube scanner
-        if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
-        shell: powershell
+      - name: Log Workflow Start
+        run: echo "Starting code review workflow"      
+
+      - name: Log OPENAI API KEY
         run: |
-          New-Item -Path .\.sonar\scanner -ItemType Directory
-          dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
-      - name: Build and analyze
-        shell: powershell
+          echo "OPENAI_API_KEY: ${{ secrets.TOKEN_GITHUB }}"
+      - name: Log OPENAI API KEY
         run: |
-          .\.sonar\scanner\dotnet-sonarscanner begin /k:"TaskManagement" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}"
-          dotnet build
-          .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+          echo "OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}"
+        
+      - name: Verify Pull Request Number
+        run: |
+          echo "Pull Request Number: ${{ github.event.pull_request.number }}"
+
+      - name: Run Code Review
+        uses: anc95/ChatGPT-CodeReview@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN_GITHUB }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          # Optional
+          LANGUAGE: English
+          OPENAI_API_ENDPOINT: https://api.openai.com/v1
+          MODEL: gpt-3.5-turbo
+          PROMPT: |
+            Please review the following code changes carefully and provide your feedback:
+
+            ```diff
+            @@ -1,5 +1,5 @@
+            - int x = 5;
+            - int y = 10;
+            + int a = 3;
+            + int b = 8;
+            ```
+            After reviewing, please leave your comments and suggestions for improvement.
+
+            - Is the variable naming consistent?
+            - Are there any potential logic errors?
+            - Any suggestions for optimization?
+          top_p: 1
+          temperature: 1
+          max_tokens: 10000
+          MAX_PATCH_LENGTH: 10000      
+      - name: Log Workflow End
+        run: echo "Code review workflow completed"
