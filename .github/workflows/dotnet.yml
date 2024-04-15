@@ -1,6 +1,5 @@
 name: Code Review
 
-
 permissions:
   contents: read
   pull-requests: write
@@ -8,6 +7,12 @@ permissions:
 on:
   pull_request:
     types: [opened, reopened, synchronize]
+
+
+on:
+  push:
+    branches:
+      - main
 
 jobs:
   test:
