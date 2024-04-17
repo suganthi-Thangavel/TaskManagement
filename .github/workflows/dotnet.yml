@@ -16,6 +16,7 @@ jobs:
         run: echo "Starting code review workflow"      
 
       - name: Log GITHUB TOKEN KEY
+      
         run: |
           echo "GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}"
       - name: Log OPENAI API KEY
