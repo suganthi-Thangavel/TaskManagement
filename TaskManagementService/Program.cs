@@ -23,6 +23,9 @@ builder.Services.AddScoped<IProjectService, ProjectService>();
 builder.Services.AddAutoMapper(typeof(TaskMappingProfile));
 builder.Services.AddAutoMapper(typeof(ProjectMappingProfile));
 
+
+
+
 builder.Services.Configure<FormOptions>(options =>
 {
     options.ValueLengthLimit = int.MaxValue;
