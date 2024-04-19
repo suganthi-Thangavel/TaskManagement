@@ -14,6 +14,8 @@ namespace TaskManagementService.Data
         public DbSet<ProjectModel> Projects { get; set; }
 
         public DbSet<TaskModel> Tasks { get; set; }
+        public DbSet<Employee> Employees { get; set; }
+        public DbSet<Department> Departments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
